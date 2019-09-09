@@ -38,18 +38,18 @@ describe('Socket tests', () => {
     let client
     const url = 'http://localhost:3001'
     const options = {
+        transports: ['websocket'],
         'reconnection delay': 0,
         'reopen delay': 0,
         'force new connection': true
     }
 
     beforeEach((done) => {
-        // setup for 2 client connections...
+        // setup for two client connections...
         socket1 = socket_client.connect(url, options)
         socket2 = socket_client.connect(url, options)
         socket1.on('connect', () => {
             console.log('client 1 connected ok!')
-                // done()
         })
         socket2.on('connect', () => {
             console.log('client 2 connected ok!')
@@ -60,7 +60,7 @@ describe('Socket tests', () => {
     })
 
     afterEach((done) => {
-        // teardown for 2 client connections
+        // teardown for both client connections
         if (socket1.connected) {
             console.log('disconnecting client 1...')
             socket1.disconnect()
@@ -91,14 +91,28 @@ describe('Socket tests', () => {
         })
     })
 
-    it('tells a user when she has joined successfully', (done) => {
-        const firstUser = { 'name': 'erin' }
-        const name = firstUser.name
-        socket1.emit('user joined chat', name)
-        console.log()
+    it('announces to a connected user when someone else joins the chat', (done) => {
+        const name = 'erin'
 
-        // getElementById('.messages').should.contain(`You\'ve joined as ${name}`)
-        done()
+        socket_server.emit('user joined chat', { message: `${name} just joined this chat` })
+
+        socket1.on('user joined chat', (msg) => {
+            msg.message.should.equal('erin just joined this chat')
+        })
+        socket2.on('user joined chat', (msg) => {
+            msg.message.should.equal('erin just joined this chat')
+            done()
+        })
+    })
+    it('sends chat', (done) => {
+        let message = { value: 'Hey hey!' }
+
+        socket_server.emit('chat message', message.value)
+
+        socket2.on('chat message', (msg) => {
+            msg.should.equal('Hey hey!')
+            done()
+        })
     })
 })
 
@@ -107,5 +121,6 @@ describe('Socket tests', () => {
 // empty form input? display message to user to enter a message
 // no name entered in username prompt? display message to user to enter a username
 // test two clients can connect and emit to each other
-// test 'you've joined as' welcome message
-// when user is typing?
+// test 'user just joined' message
+// test welcome message when user connection successful
+// test when user is typing (and implement)

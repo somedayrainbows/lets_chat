@@ -10,7 +10,7 @@ const newMessage = (message) => {
     messages.appendChild(li)
 }
 
-newMessage(`You\'ve joined as ${name}`)
+newMessage(`Welcome, ${name}!`)
 socket.emit('user joined chat', name)
 
 chatForm.addEventListener('submit', (e) => {

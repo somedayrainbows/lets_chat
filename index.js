@@ -20,7 +20,7 @@ io.on('connection', (socket) => {
 
     socket.on('user joined chat', function(name) {
         this.name = name
-        socket.broadcast.emit('user joined chat', { message: `${name} just joined!` })
+        socket.broadcast.emit('user joined chat', { message: `${name} just joined this chat` })
     })
 })
 
