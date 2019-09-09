@@ -1,7 +1,7 @@
 const chai = require('chai')
 const should = chai.should()
 const chaiHttp = require('chai-http')
-const server = require('../index.js')
+const server = require('../index')
 const socket_client = require('socket.io-client')
 const socket_server = require('socket.io').listen(3001);
 

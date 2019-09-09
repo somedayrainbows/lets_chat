@@ -11,6 +11,7 @@ const newMessage = (message) => {
 }
 
 newMessage(`Welcome, ${name}!`)
+
 socket.emit('user joined chat', name)
 
 chatForm.addEventListener('submit', (e) => {
