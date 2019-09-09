@@ -16,9 +16,7 @@ socket.emit('user joined chat', name)
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
-    socket.emit('chat message', {
-        message: message.value
-    })
+    socket.emit('chat message', { message: message.value })
 
     message.value = ''
     return false
@@ -28,6 +26,6 @@ socket.on('chat message', (msg) => {
     newMessage(`${msg.name}: ${msg.message}`)
 })
 
-socket.on('user joined chat', (name) => {
-    newMessage(`${name} is in here!`)
+socket.on('user joined chat', (msg) => {
+    newMessage(msg.message)
 })

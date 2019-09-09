@@ -22,7 +22,7 @@ describe('Root page test', () => {
             })
     })
 
-    it('should return a 404 for a path that not exist', () => {
+    it('should return a 404 for a path that does not exist', () => {
         return chai.request(server)
             .get('/nonexistent')
             .then((response) => {
@@ -42,44 +42,62 @@ describe('Socket tests', () => {
         'reopen delay': 0,
         'force new connection': true
     }
-    const firstUser = { 'username': 'erinb' }
 
     beforeEach((done) => {
-        // only one client joining...
-        client = socket_client.connect(url, options)
-        client.on('connect', () => {
-            console.log('client connected ok!')
+        // setup for 2 client connections...
+        socket1 = socket_client.connect(url, options)
+        socket2 = socket_client.connect(url, options)
+        socket1.on('connect', () => {
+            console.log('client 1 connected ok!')
+                // done()
+        })
+        socket2.on('connect', () => {
+            console.log('client 2 connected ok!')
             done()
         })
-        client.on('disconnect', () => console.log('client disconnected ok!'))
+        socket1.on('disconnect', () => console.log('client 1 disconnected ok!'))
+        socket2.on('disconnect', () => console.log('client 2 disconnected ok!'))
     })
 
     afterEach((done) => {
-        if (client.connected) {
-            console.log('disconnecting client...')
-            client.disconnect()
+        // teardown for 2 client connections
+        if (socket1.connected) {
+            console.log('disconnecting client 1...')
+            socket1.disconnect()
         } else {
-            console.log('there isn\'t a connection to disconnect!')
+            console.log('client 1 isn\'t connected!')
+        }
+        if (socket2.connected) {
+            console.log('disconnecting client 2...')
+            socket2.disconnect()
+        } else {
+            console.log('client 2 isn\'t connected!')
         }
         done()
+    })
+
+    it('server can connect', () => {
+        socket_server.on('connection', (socket) => {
+            socket.should.not.be.null
+        })
     })
 
     it('server can emit a message', (done) => {
         socket_server.emit('message', 'This is a message!')
 
-        client.once('message', (message) => {
+        socket1.once('message', (message) => {
             message.should.equal('This is a message!')
             done()
         })
-
-        socket_server.on('connection', (socket) => {
-            // console.log(socket)
-            socket.should.not.be.null
-        })
     })
 
-    xit('announces when a user joins', (done) => {
+    it('tells a user when she has joined successfully', (done) => {
+        const firstUser = { 'name': 'erin' }
+        const name = firstUser.name
+        socket1.emit('user joined chat', name)
+        console.log()
 
+        // getElementById('.messages').should.contain(`You\'ve joined as ${name}`)
         done()
     })
 })
