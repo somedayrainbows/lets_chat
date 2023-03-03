@@ -16,6 +16,6 @@
     "devDependencies": {
         "chai": "^4.2.0",
         "chai-http": "git+https://github.com/chaijs/chai-http.git#3ea4524",
-        "mocha": "^6.2.0"
+        "mocha": "^6.2.3"
     }
 }
